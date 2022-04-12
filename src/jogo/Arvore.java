@@ -1,11 +1,18 @@
 package jogo;
 
 public class Arvore {
-	boolean fimDeJogo, vez;
+	boolean fimDeJogo, vezIA;
 	private String[][] no;
+	String ganhador;
 	
-	public Arvore() {
+
+	public Arvore(boolean vezIA) {
 		this.no = new String[3][3];
+		this.fimDeJogo = false;
+		this.vezIA = vezIA;
+		this.ganhador = " ";
+		
+		inicializar();
 	}
 	
 	public void inicializar() {
@@ -29,7 +36,33 @@ public class Arvore {
 	}
 
 	public boolean estaTudoPreenchido() {
-		// TODO Auto-generated method stub
-		return false;
+		for(int i = 0; i<3; i++) {
+			for(int j = 0; j<3; j++) {
+				if(no[i][j] == " ") {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+	
+	public boolean podeMarcar() {
+		return true;
+	}
+	
+	public boolean trocarVez() {
+		return this.vezIA != vezIA;
+	}
+	
+	public void checarVitoria() {
+		
+	}
+	
+	public String[][] getNo() {
+		return no;
+	}
+
+	public void setNo(String[][] no) {
+		this.no = no;
 	}
 }
