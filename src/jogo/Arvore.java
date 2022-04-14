@@ -46,12 +46,15 @@ public class Arvore {
 		return true;
 	}
 	
-	public boolean podeMarcar() {
-		return true;
+	public boolean podeMarcar(int i, int j) {
+		if(this.no[i][j] == " ") {
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean trocarVez() {
-		return this.vezIA != vezIA;
+		return vezIA =! vezIA;
 	}
 	
 	public void checarVitoria() {
