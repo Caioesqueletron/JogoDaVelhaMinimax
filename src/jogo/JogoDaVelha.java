@@ -185,8 +185,8 @@ public class JogoDaVelha extends Application
 		pw.setLayoutX(175);
 		pw.setLayoutY(159);
 
-		ObservableList<String> options = FXCollections.observableArrayList("Nivel 1", "Nivel 2", "Nivel 3", "Nivel 4",
-				"Nivel 5", "Nivel 6", "Nivel 7", "Nivel 8", "Nivel 9");
+		ObservableList<String> options = FXCollections.observableArrayList("1", "2", "3", "4",
+				"5", "6", "7", "8", "9");
 
 		ComboBox<String> comboBox = new ComboBox<String>(options);
 		grid.getChildren().add(comboBox);
@@ -196,6 +196,7 @@ public class JogoDaVelha extends Application
 		comboBox.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
+				setNivel(Integer.parseInt(comboBox.getValue()));
 			}
 
 		});
@@ -252,8 +253,8 @@ public class JogoDaVelha extends Application
 		gameTimer.start();
 	}
 
-	private static void lanceIA() {
-		int[] movimento = Minimax.melhorJogada(tabuleiro, 9);
+	private void lanceIA() {
+		int[] movimento = Minimax.melhorJogada(tabuleiro, getNivel());
 		int linha = movimento[0];
 		int coluna = movimento[1];
 		tabuleiro.marcarCampoPraValer(linha, coluna);
