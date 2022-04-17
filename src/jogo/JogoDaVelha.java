@@ -31,34 +31,34 @@ public class JogoDaVelha extends Application
 	private static GridPane gameBoard;
 	private static Arvore tabuleiro;
 	private AnimationTimer gameTimer;
-	private MenuBar menuBar;
-	private Menu gameMenu;
-	private MenuItem newGameOption;
+	private MenuBar barra;
+	private Menu menuJogo;
+	private MenuItem novoJogo;
 	private BorderPane root;
 	private BorderPane root2;
-	private int nível;
-
+	private int nivel;
 	private boolean vezIA;
+	private boolean quemComeca;
 
-	public final static class Tile extends Button {
+	public final static class Blocos extends Button {
 
 		private final int row;
 		private final int col;
 		private String marcar;
 
-		public Tile(int initRow, int initCol, String marcar) {
-			row = initRow;
-			col = initCol;
+		public Blocos(int linhaInicial, int colunaInicial, String marcar) {
+			row = linhaInicial;
+			col = colunaInicial;
 			this.marcar = marcar;
-			initialiseTile();
+			inicializarBlocos();
 		}
 
-		private void initialiseTile() {
+		private void inicializarBlocos() {
 			this.setOnMouseClicked(e -> {
 				if (!tabuleiro.isVezIA()) {
 					tabuleiro.marcarCampoPraValer(this.row, this.col);
 					System.out.println(tabuleiro.getNoMarcado(this.row, this.col));
-					this.update();
+					this.atualiza();
 				}
 			});
 			this.setStyle("-fx-font-size:20");
@@ -67,7 +67,7 @@ public class JogoDaVelha extends Application
 			this.setText("" + this.marcar);
 		}
 
-		public void update() {
+		public void atualiza() {
 			this.marcar = tabuleiro.getNoMarcado(this.row, this.col);
 			this.setText("" + marcar);
 		}
@@ -79,63 +79,53 @@ public class JogoDaVelha extends Application
 
 	@Override
 	public void start(Stage primaryStage) {
-		root = new BorderPane();
-
-		root.setCenter(generateGUI());
-		root.setTop(initialiseMenu());
-		Scene scene = new Scene(root);
 
 		root2 = new BorderPane();
+		root2.setCenter(menuconfig(primaryStage));
 
-		root2.setCenter(menuconfig(primaryStage, scene));
-
-		root.setCenter(generateGUI());
-		root.setTop(initialiseMenu());
 		Scene sceneDois = new Scene(root2, 450, 450);
 		primaryStage.setTitle("Jogo da Velha");
 		primaryStage.setScene(sceneDois);
 		primaryStage.setResizable(false);
 
-
 		primaryStage.show();
 	}
 
-	private static GridPane generateGUI() {
+	private GridPane gerarInterface() {
 		gameBoard = new GridPane();
-		tabuleiro = new Arvore(true);
+		tabuleiro = new Arvore(isQuemComeca());
 		gameBoard.setAlignment(Pos.CENTER);
 
-		for (int row = 0; row < 3; row++) {
-			for (int col = 0; col < 3; col++) {
-				Tile tile = new Tile(row, col, tabuleiro.getNoMarcado(row, col));
-				GridPane.setConstraints(tile, col, row);
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				Blocos tile = new Blocos(i, j, tabuleiro.getNoMarcado(i, j));
+				GridPane.setConstraints(tile, j, i);
 				gameBoard.getChildren().add(tile);
 			}
 		}
 		return gameBoard;
 	}
 
-	private MenuBar initialiseMenu() {
-		menuBar = new MenuBar();
-		gameMenu = new Menu("game");
-		newGameOption = new MenuItem("New Game");
+	private MenuBar menuInicial() {
+		barra = new MenuBar();
+		menuJogo = new Menu("Jogo");
+		novoJogo = new MenuItem("Novo Jogo");
 
-		gameMenu.getItems().add(newGameOption);
-		menuBar.getMenus().add(gameMenu);
-		newGameOption.setOnAction(e -> {
-			resetGame();
+		menuJogo.getItems().add(novoJogo);
+		barra.getMenus().add(menuJogo);
+		novoJogo.setOnAction(e -> {
+			resetarJogo();
 		});
-		return menuBar;
+		return barra;
 	}
 
-	
-	private VBox menuconfig(Stage primaryStage, Scene scene) {
+	private VBox menuconfig(Stage primaryStage) {
+		Text actiontarget = new Text();
 		VBox vBox = new VBox();
 		vBox.prefHeight(400.0);
 		vBox.prefWidth(640.0);
 		vBox.setAlignment(Pos.CENTER);
-		
-		
+
 		AnchorPane grid = new AnchorPane();
 		grid.setMaxHeight(-1.0);
 		grid.setMaxWidth(-1.0);
@@ -143,12 +133,11 @@ public class JogoDaVelha extends Application
 		grid.prefWidth(-1.0);
 
 		/*
-		Text scenetitle = new Text("Jogo da Velha - Menu");
-		scenetitle.setFont(Font.font("Sans-Serif", FontWeight.NORMAL, 15));
-		grid.getChildren().add(scenetitle);
-		scenetitle.setLayoutX(800.0);
-		scenetitle.setLayoutY(0.0);
-		*/
+		 * Text scenetitle = new Text("Jogo da Velha - Menu");
+		 * scenetitle.setFont(Font.font("Sans-Serif", FontWeight.NORMAL, 15));
+		 * grid.getChildren().add(scenetitle); scenetitle.setLayoutX(800.0);
+		 * scenetitle.setLayoutY(0.0);
+		 */
 
 		Label userName = new Label("Quem começa?");
 		userName.setAlignment(Pos.CENTER);
@@ -160,8 +149,6 @@ public class JogoDaVelha extends Application
 		userName.prefHeight(27.0);
 		userName.prefWidth(177.0);
 		grid.getChildren().add(userName);
-
-
 
 		RadioButton userRadioButton = new RadioButton("Usuário - O");
 		grid.getChildren().add(userRadioButton);
@@ -176,6 +163,7 @@ public class JogoDaVelha extends Application
 		iaRadioButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
+				setQuemComeca(true);
 				if (userRadioButton.isSelected()) {
 					userRadioButton.setSelected(false);
 				}
@@ -185,6 +173,7 @@ public class JogoDaVelha extends Application
 		userRadioButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
+				setQuemComeca(false);
 				if (iaRadioButton.isSelected()) {
 					iaRadioButton.setSelected(false);
 				}
@@ -196,7 +185,7 @@ public class JogoDaVelha extends Application
 		pw.setLayoutX(175);
 		pw.setLayoutY(159);
 
-		ObservableList<String> options = FXCollections.observableArrayList("Nivel 1" , "Nivel 2", "Nivel 3", "Nivel 4",
+		ObservableList<String> options = FXCollections.observableArrayList("Nivel 1", "Nivel 2", "Nivel 3", "Nivel 4",
 				"Nivel 5", "Nivel 6", "Nivel 7", "Nivel 8", "Nivel 9");
 
 		ComboBox<String> comboBox = new ComboBox<String>(options);
@@ -207,7 +196,6 @@ public class JogoDaVelha extends Application
 		comboBox.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				System.out.println(comboBox.getValue());
 			}
 
 		});
@@ -218,41 +206,45 @@ public class JogoDaVelha extends Application
 		grid.getChildren().add(hbBtn);
 		hbBtn.setLayoutX(182);
 		hbBtn.setLayoutY(250);
-
-		final Text actiontarget = new Text();
 		grid.getChildren().add(actiontarget);
+		actiontarget.setLayoutX(110);
+		actiontarget.setLayoutY(300);
 
 		btn.setOnAction(new EventHandler<ActionEvent>() {
 
 			@Override
 			public void handle(ActionEvent e) {
-				actiontarget.setFill(Color.FIREBRICK);
-				actiontarget.setText("Todos os campos precisam ser preenchidos");
-				primaryStage.setScene(scene);
-
-				primaryStage.show();
-				runGameLoop();
+				if (comboBox.getValue() == null || (!iaRadioButton.isSelected() && !userRadioButton.isSelected())) {
+					actiontarget.setFill(Color.RED);
+					actiontarget.setText("Todos os campos precisam ser preenchidos");
+				} else {
+					root = new BorderPane();
+					root.setCenter(gerarInterface());
+					root.setTop(menuInicial());
+					Scene scene = new Scene(root);
+					primaryStage.setScene(scene);
+					primaryStage.show();
+					runGameLoop();
+				}
 
 			}
 		});
-		
+
 		vBox.getChildren().add(grid);
 		VBox.setVgrow(grid, Priority.ALWAYS);
 
 		return vBox;
 	}
 
-	
 	private void runGameLoop() {
 		gameTimer = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
 				if (tabuleiro.isFimDeJogo()) {
-					System.out.println("passou por aqui1");
-					endGame();
+					fimDeJogo();
 				} else {
-					if (tabuleiro.isVezIA()) {			
-						playAI();
+					if (tabuleiro.isVezIA()) {
+						lanceIA();
 					}
 				}
 			}
@@ -260,50 +252,50 @@ public class JogoDaVelha extends Application
 		gameTimer.start();
 	}
 
-	private static void playAI() {
-		int[] move = Minimax.melhorJogada(tabuleiro, 9);
-		int row = move[0];
-		int col = move[1];
-		tabuleiro.marcarCampoPraValer(row, col);
+	private static void lanceIA() {
+		int[] movimento = Minimax.melhorJogada(tabuleiro, 9);
+		int linha = movimento[0];
+		int coluna = movimento[1];
+		tabuleiro.marcarCampoPraValer(linha, coluna);
 		for (Node child : gameBoard.getChildren()) {
-			if (GridPane.getRowIndex(child) == row && GridPane.getColumnIndex(child) == col) {
-				Tile t = (Tile) child;
-				t.update();
+			if (GridPane.getRowIndex(child) == linha && GridPane.getColumnIndex(child) == coluna) {
+				Blocos t = (Blocos) child;
+				t.atualiza();
 				return;
 			}
 		}
 	}
 
-	private void resetGame() {
-		root.setCenter(generateGUI());
+	private void resetarJogo() {
+		root.setCenter(gerarInterface());
 		runGameLoop();
 	}
 
-	private void endGame() {
+	private void fimDeJogo() {
 		gameTimer.stop();
-		Alert gameOverAlert = new Alert(AlertType.INFORMATION, "", new ButtonType("Novo Jogo"));
+		Alert alertaFimDeJogo = new Alert(AlertType.INFORMATION, "", new ButtonType("Novo Jogo"));
 		String vencedor = tabuleiro.getGanhador();
 
-		gameOverAlert.setTitle("Fim de Jogo");
-		gameOverAlert.setHeaderText("Jogo da Velha");
+		alertaFimDeJogo.setTitle("Fim de Jogo");
+		alertaFimDeJogo.setHeaderText("Jogo da Velha");
 		if (vencedor == "Empate") {
-			gameOverAlert.setContentText("Empate!");
+			alertaFimDeJogo.setContentText("Empate!");
 		} else {
-			gameOverAlert.setContentText(vencedor + " venceu!");
+			alertaFimDeJogo.setContentText(vencedor + " venceu!");
 		}
-		gameOverAlert.setOnHidden(e -> {
-			gameOverAlert.close();
-			resetGame();
+		alertaFimDeJogo.setOnHidden(e -> {
+			alertaFimDeJogo.close();
+			resetarJogo();
 		});
-		gameOverAlert.show();
+		alertaFimDeJogo.show();
 	}
 
-	public int getNível() {
-		return nível;
+	public int getNivel() {
+		return nivel;
 	}
 
-	public void setNível(int nível) {
-		this.nível = nível;
+	public void setNivel(int nivel) {
+		this.nivel = nivel;
 	}
 
 	public boolean isVezIA() {
@@ -312,5 +304,13 @@ public class JogoDaVelha extends Application
 
 	public void setVezIA(boolean vezIA) {
 		this.vezIA = vezIA;
+	}
+
+	public boolean isQuemComeca() {
+		return quemComeca;
+	}
+
+	public void setQuemComeca(boolean quemComeca) {
+		this.quemComeca = quemComeca;
 	}
 }
