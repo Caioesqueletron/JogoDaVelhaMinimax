@@ -120,11 +120,9 @@ public class Arvore {
 			if (somatorio == 3) {
 				this.setGanhador("X");
 				fimDeJogo = true;
-				System.out.println("Venceu");
 				return;
 			} else if (somatorio == -3) {
 				this.setGanhador("O");
-				System.out.println("Venceu");
 				fimDeJogo = true;
 				return;
 			}
@@ -141,12 +139,10 @@ public class Arvore {
 			}
 			if (somatorio == 3) {
 				this.setGanhador("X");
-				System.out.println("Venceu");
 				fimDeJogo = true;
 				return;
 			} else if (somatorio == -3) {
 				this.setGanhador("O");
-				System.out.println("Venceu");
 				fimDeJogo = true;
 				return;
 			}

@@ -57,7 +57,6 @@ public class JogoDaVelha extends Application
 			this.setOnMouseClicked(e -> {
 				if (!tabuleiro.isVezIA()) {
 					tabuleiro.marcarCampoPraValer(this.row, this.col);
-					System.out.println(tabuleiro.getNoMarcado(this.row, this.col));
 					this.atualiza();
 				}
 			});
@@ -132,12 +131,6 @@ public class JogoDaVelha extends Application
 		grid.prefHeight(-1.0);
 		grid.prefWidth(-1.0);
 
-		/*
-		 * Text scenetitle = new Text("Jogo da Velha - Menu");
-		 * scenetitle.setFont(Font.font("Sans-Serif", FontWeight.NORMAL, 15));
-		 * grid.getChildren().add(scenetitle); scenetitle.setLayoutX(800.0);
-		 * scenetitle.setLayoutY(0.0);
-		 */
 
 		Label userName = new Label("Quem começa?");
 		userName.setAlignment(Pos.CENTER);
