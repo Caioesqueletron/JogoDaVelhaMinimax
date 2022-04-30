@@ -3,11 +3,13 @@ package jogo;
 public class Arvore {
 	private boolean fimDeJogo, vezIA;
 	private String[][] no;
-	String ganhador;
-	public Arvore(boolean vezIA) {
+	String ganhador,simboloJogador,simboloIA;
+	public Arvore(boolean vezIA, String simboloJogador, String simboloIA) {
 		this.no = new String[3][3];
 		this.fimDeJogo = false;
 		this.vezIA = vezIA;
+		this.simboloIA = simboloIA;
+		this.simboloJogador = simboloJogador;
 		this.ganhador = "";
 		inicializar();
 	}
@@ -28,11 +30,11 @@ public class Arvore {
 		return false;
 	}
 
-	public boolean marcarCampoPraValer(int i, int j) {
+	public boolean marcarCampoPraValer(int i, int j, String simbolo) {
 		if (i < 0 || i >= 3 || j < 0 || j >= 3 || estaMarcado(i, j) || fimDeJogo) {
 			return false;
 		}
-		no[i][j] = this.isVezIA() ? "X" : "O";
+		no[i][j] = simbolo;
 		trocarVez();
 		checarVitoria();
 		return true;
@@ -42,7 +44,7 @@ public class Arvore {
 		int blocos = 0;
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				if (this.no[i][j] == "X" || no[i][j] == "O") {
+				if (this.no[i][j] == this.simboloIA || no[i][j] == this.simboloJogador) {
 					blocos++;
 				}
 			}
@@ -67,19 +69,19 @@ public class Arvore {
 
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
-				if (aux[i][j] == "X") {
+				if (aux[i][j] == this.simboloIA) {
 					somatorio++;
-				} else if (aux[i][j] == "O") {
+				} else if (aux[i][j] == this.simboloJogador) {
 					somatorio--;
 				}
 			}
 			if (somatorio == 3) {
-				this.setGanhador("X");
+				this.setGanhador(this.simboloIA);
 				fimDeJogo = true;
 				return;
 
 			} else if (somatorio == -3) {
-				this.setGanhador("O");
+				this.setGanhador(this.simboloJogador);
 				fimDeJogo = true;
 				return;
 			}
@@ -91,18 +93,18 @@ public class Arvore {
 
 		for (int j = 0; j < 3; j++) {
 			for (int i = 0; i < 3; i++) {
-				if (aux[i][j] == "X") {
+				if (aux[i][j] == this.simboloIA) {
 					somatorio++;
-				} else if (aux[i][j] == "O") {
+				} else if (aux[i][j] == this.simboloJogador) {
 					somatorio--;
 				}
 			}
 			if (somatorio == 3) {
-				this.setGanhador("X");
+				this.setGanhador(this.simboloIA);
 				fimDeJogo = true;
 				return;
 			} else if (somatorio == -3) {
-				this.setGanhador("O");
+				this.setGanhador(this.simboloJogador);
 				fimDeJogo = true;
 				return;
 			}
@@ -112,17 +114,17 @@ public class Arvore {
 
 		somatorio = 0;
 		for (int i = 0; i < 3; i++) {
-			if (aux[i][i] == "X") {
+			if (aux[i][i] == this.simboloIA) {
 				somatorio++;
-			} else if (aux[i][i] == "O") {
+			} else if (aux[i][i] == this.simboloJogador) {
 				somatorio--;
 			}
 			if (somatorio == 3) {
-				this.setGanhador("X");
+				this.setGanhador(this.simboloIA);
 				fimDeJogo = true;
 				return;
 			} else if (somatorio == -3) {
-				this.setGanhador("O");
+				this.setGanhador(this.simboloJogador);
 				fimDeJogo = true;
 				return;
 			}
@@ -132,17 +134,17 @@ public class Arvore {
 
 		int index = 2;
 		for (int i = 0; i < 3; i++) {
-			if (aux[i][index] == "X") {
+			if (aux[i][index] == this.simboloIA) {
 				somatorio++;
-			} else if (aux[i][index] == "O") {
+			} else if (aux[i][index] ==this.simboloJogador) {
 				somatorio--;
 			}
 			if (somatorio == 3) {
-				this.setGanhador("X");
+				this.setGanhador(this.simboloIA);
 				fimDeJogo = true;
 				return;
 			} else if (somatorio == -3) {
-				this.setGanhador("O");
+				this.setGanhador(this.simboloJogador);
 				fimDeJogo = true;
 				return;
 			}
