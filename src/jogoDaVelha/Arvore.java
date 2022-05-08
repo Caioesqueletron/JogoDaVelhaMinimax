@@ -1,4 +1,4 @@
-package jogo;
+package jogoDaVelha;
 
 public class Arvore {
 	private boolean fimDeJogo, vezIA;
@@ -30,8 +30,8 @@ public class Arvore {
 		return false;
 	}
 
-	public boolean marcarCampoPraValer(int i, int j, String simbolo) {
-		if (i < 0 || i >= 3 || j < 0 || j >= 3 || estaMarcado(i, j) || fimDeJogo) {
+	public boolean fazerJogada(int i, int j, String simbolo) {
+		if (estaMarcado(i, j) || fimDeJogo) {
 			return false;
 		}
 		no[i][j] = simbolo;
@@ -78,12 +78,10 @@ public class Arvore {
 			if (somatorio == 3) {
 				this.setGanhador(this.simboloIA);
 				fimDeJogo = true;
-				return;
 
 			} else if (somatorio == -3) {
 				this.setGanhador(this.simboloJogador);
 				fimDeJogo = true;
-				return;
 			}
 
 			somatorio = 0;
@@ -102,11 +100,9 @@ public class Arvore {
 			if (somatorio == 3) {
 				this.setGanhador(this.simboloIA);
 				fimDeJogo = true;
-				return;
 			} else if (somatorio == -3) {
 				this.setGanhador(this.simboloJogador);
 				fimDeJogo = true;
-				return;
 			}
 
 			somatorio = 0;
@@ -122,11 +118,9 @@ public class Arvore {
 			if (somatorio == 3) {
 				this.setGanhador(this.simboloIA);
 				fimDeJogo = true;
-				return;
 			} else if (somatorio == -3) {
 				this.setGanhador(this.simboloJogador);
 				fimDeJogo = true;
-				return;
 			}
 		}
 
@@ -142,11 +136,9 @@ public class Arvore {
 			if (somatorio == 3) {
 				this.setGanhador(this.simboloIA);
 				fimDeJogo = true;
-				return;
 			} else if (somatorio == -3) {
 				this.setGanhador(this.simboloJogador);
 				fimDeJogo = true;
-				return;
 			}
 
 			index--;
@@ -155,7 +147,6 @@ public class Arvore {
 		if(this.estaTudoPreenchido()) {
 			this.setGanhador("Empate");
 			fimDeJogo = true;
-			return;
 		}
 		
 	}
@@ -172,7 +163,7 @@ public class Arvore {
 		this.no = no;
 	}
 	
-	public void marcarCampo(int i, int j, String c) {
+	public void estipularJogada(int i, int j, String c) {
 		this.no[i][j] = c;
 	}
 	

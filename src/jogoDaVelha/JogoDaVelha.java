@@ -1,7 +1,5 @@
-package jogo;
+package jogoDaVelha;
 
-import ia.Minimax;
-import ia.MinimaxHeuristicaDiferente;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -23,6 +21,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
+import minimax.Minimax;
+import minimax.MinimaxHeuristicaDiferente;
 
 public class JogoDaVelha extends Application
 
@@ -31,9 +31,6 @@ public class JogoDaVelha extends Application
 	private static GridPane planoFundo;
 	private static Arvore tabuleiro;
 	private AnimationTimer gameTimer;
-	private MenuBar barra;
-	private Menu menuJogo;
-	private MenuItem novoJogo;
 	private BorderPane plano;
 	private BorderPane plano2;
 	private int nivel;
@@ -42,13 +39,16 @@ public class JogoDaVelha extends Application
 	private int tipoHeuristica;
 	private  String simboloJogador;
 	private String simbolobIA;
+	public Stage transicaoStage;
+	public Stage aux;
+	public Scene transicao;
 
 	public final static class Blocos extends Button {
 
-		private final int i;
-		private final int j;
+		private int j;
+		private int i;
 		private String marcar;
-		private String simboloJogador;
+		private final String simboloJogador;
 
 		public Blocos(int linhaInicial, int colunaInicial, String marcar, String simboloJogador) {
 			i = linhaInicial;
@@ -61,7 +61,7 @@ public class JogoDaVelha extends Application
 		private void inicializarBlocos() {
 			this.setOnMouseClicked(e -> {
 				if (!tabuleiro.isVezIA()) {
-					tabuleiro.marcarCampoPraValer(this.i, this.j, this.simboloJogador);
+					tabuleiro.fazerJogada(this.i, this.j, this.simboloJogador);
 					this.atualiza();
 				}
 			});
@@ -91,14 +91,16 @@ public class JogoDaVelha extends Application
 
 	@Override
 	public void start(Stage primaryStage) {
-
+		
 		plano2 = new BorderPane();
 		plano2.setCenter(menuconfig(primaryStage));
-
+		
+	
 		Scene sceneDois = new Scene(plano2, 450, 450);
 		primaryStage.setTitle("Jogo da Velha");
 		primaryStage.setScene(sceneDois);
 		primaryStage.setResizable(false);
+		aux = primaryStage;
 
 		primaryStage.show();
 	}
@@ -119,19 +121,6 @@ public class JogoDaVelha extends Application
 		return planoFundo;
 	}
 
-	private MenuBar menuInicial() {
-		barra = new MenuBar();
-		menuJogo = new Menu("Jogo");
-		novoJogo = new MenuItem("Novo Jogo");
-
-		menuJogo.getItems().add(novoJogo);
-		barra.getMenus().add(menuJogo);
-		novoJogo.setOnAction(e -> {
-			resetarJogo();
-		});
-		return barra;
-	}
-
 	private VBox menuconfig(Stage primaryStage) {
 		Text actiontarget = new Text();
 		VBox vBox = new VBox();
@@ -146,10 +135,10 @@ public class JogoDaVelha extends Application
 		grid.prefWidth(-1.0);
 
 
-		Label userName = new Label("Quem começa?");
+		Label userName = new Label("Jogo da Velha - Menu Inicial");
 		userName.setAlignment(Pos.CENTER);
 		userName.setTextAlignment(TextAlignment.CENTER);
-		userName.setLayoutX(175.0);
+		userName.setLayoutX(155.0);
 		userName.setLayoutY(69.0);
 		userName.prefHeight(27.0);
 		userName.prefWidth(177.0);
@@ -256,7 +245,7 @@ public class JogoDaVelha extends Application
 
 		ComboBox<String> comboBox = new ComboBox<String>(options);
 		grid.getChildren().add(comboBox);
-		comboBox.setLayoutX(185);
+		comboBox.setLayoutX(195);
 		comboBox.setLayoutY(250);
 
 		comboBox.setOnAction(new EventHandler<ActionEvent>() {
@@ -271,7 +260,7 @@ public class JogoDaVelha extends Application
 		HBox hbBtn = new HBox();
 		hbBtn.getChildren().add(btn);
 		grid.getChildren().add(hbBtn);
-		hbBtn.setLayoutX(182);
+		hbBtn.setLayoutX(175);
 		hbBtn.setLayoutY(300);
 		grid.getChildren().add(actiontarget);
 		actiontarget.setLayoutX(110);
@@ -290,7 +279,6 @@ public class JogoDaVelha extends Application
 				} else {
 					plano = new BorderPane();
 					plano.setCenter(gerarInterface());
-					plano.setTop(menuInicial());
 					Scene scene = new Scene(plano);
 					primaryStage.setScene(scene);
 					primaryStage.show();
@@ -320,8 +308,8 @@ public class JogoDaVelha extends Application
 			public void handle(long now) {
 				if (tabuleiro.isFimDeJogo()) {
 					long memory = runtime.totalMemory() - runtime.freeMemory();
-				    System.out.println("Used memory is bytes: " + memory);
-				    System.out.println("Used memory is megabytes: "
+				    System.out.println("Memoria usada em bytes: " + memory);
+				    System.out.println("Memoria usada em megabytes: "
 				        + bytesToMegabytes(memory));
 					fimDeJogo();
 				} else {
@@ -344,35 +332,31 @@ public class JogoDaVelha extends Application
 		}
 		int linha = movimento[0];
 		int coluna = movimento[1];
-		tabuleiro.marcarCampoPraValer(linha, coluna, getSimbolobIA());
+		tabuleiro.fazerJogada(linha, coluna, getSimbolobIA());
 		for (Node child : planoFundo.getChildren()) {
-			if (GridPane.getRowIndex(child) == linha && GridPane.getColumnIndex(child) == coluna) {
-				Blocos t = (Blocos) child;
-				t.atualiza();
+			if (GridPane.getColumnIndex(child) == coluna && GridPane.getRowIndex(child) == linha ) {
+				Blocos blocos = (Blocos) child;
+				blocos.atualiza();
 			}
 		}
 	}
 
-	private void resetarJogo() {
-		plano.setCenter(gerarInterface());
-		rodando();
-	}
 
 	private void fimDeJogo() {
 		gameTimer.stop();
-		Alert alertaFimDeJogo = new Alert(AlertType.INFORMATION, "", new ButtonType("Novo Jogo"));
+		Alert alertaFimDeJogo = new Alert(AlertType.WARNING, "", new ButtonType("Menu Principal"));
 		String vencedor = tabuleiro.getGanhador();
-
 		alertaFimDeJogo.setTitle("Fim de Jogo");
-		alertaFimDeJogo.setHeaderText("Jogo da Velha");
 		if (vencedor == "Empate") {
 			alertaFimDeJogo.setContentText("Empate!");
 		} else {
 			alertaFimDeJogo.setContentText(vencedor + " venceu!");
 		}
 		alertaFimDeJogo.setOnHidden(e -> {
+			start(aux);
 			alertaFimDeJogo.close();
-			resetarJogo();
+			
+
 		});
 		alertaFimDeJogo.show();
 	}

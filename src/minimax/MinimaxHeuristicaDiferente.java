@@ -1,6 +1,6 @@
-package ia;
+package minimax;
 
-import jogo.Arvore;
+import jogoDaVelha.Arvore;
 
 public class MinimaxHeuristicaDiferente {
 
@@ -12,9 +12,9 @@ public class MinimaxHeuristicaDiferente {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				if (!no.estaMarcado(i, j)) {
-					no.marcarCampo(i, j, simboloIA);
+					no.estipularJogada(i, j, simboloIA);
 					int maiorPontuacao = minimax(no, false, profundidade - 1, simboloJogador, simboloIA);
-					no.marcarCampo(i, j, "");
+					no.estipularJogada(i, j, "");
 
 					if (maiorPontuacao > melhorPontuacao) {
 						melhorPontuacao = maiorPontuacao;
@@ -31,7 +31,7 @@ public class MinimaxHeuristicaDiferente {
 	public static int minimax(Arvore no, boolean isMax, int profundidade, String simboloJogador, String simboloIA) {
 		int pontuacao = avaliarEstado(no, simboloJogador, simboloIA, profundidade);
 
-		if (Math.abs(pontuacao) == 1 || no.estaTudoPreenchido() || profundidade == 0) {
+		if (Math.abs(pontuacao) > 0 || no.estaTudoPreenchido() || profundidade == -1) {
 			return pontuacao;
 		}
 		if (isMax) {
@@ -49,9 +49,9 @@ public class MinimaxHeuristicaDiferente {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				if (!no.estaMarcado(i, j)) {
-					no.marcarCampo(i, j, simboloJogador);
+					no.estipularJogada(i, j, simboloJogador);
 					menorPontuacao = Math.min(menorPontuacao, minimax(no, true, profundidade - 1, simboloJogador, simboloIA));
-					no.marcarCampo(i, j, "");
+					no.estipularJogada(i, j, "");
 
 				}
 			}
@@ -65,9 +65,9 @@ public class MinimaxHeuristicaDiferente {
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				if (!no.estaMarcado(i, j)) {
-					no.marcarCampo(i, j, simboloIA);
+					no.estipularJogada(i, j, simboloIA);
 					maiorPontuacao = Math.max(maiorPontuacao, minimax(no, false, profundidade - 1, simboloJogador, simboloIA));
-					no.marcarCampo(i, j, "");
+					no.estipularJogada(i, j, "");
 				}
 			}
 		}
